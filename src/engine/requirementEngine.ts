@@ -43,7 +43,22 @@ export function advanceFormulaization(
   optionId: string
 ): GameState {
   const req = state.requirements.find((r) => r.id === reqId);
-  if (!req || req.status !== 'backlog' && req.status !== 'formulaizing') return state;
+  if (!req) return state;
+  
+  // Handle starting formulaization from backlog
+  if (req.status === 'backlog' && optionId === 'start') {
+    const updatedRequirements = state.requirements.map((r) =>
+      r.id === reqId
+        ? { ...r, status: 'formulaizing' as RequirementStatus }
+        : r
+    );
+    return {
+      ...state,
+      requirements: updatedRequirements,
+    };
+  }
+  
+  if (req.status !== 'formulaizing') return state;
 
   const progress = req.formulaization;
   const currentStep = progress.steps[progress.currentStepIndex];
