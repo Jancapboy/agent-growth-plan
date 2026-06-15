@@ -1,0 +1,158 @@
+// src/data/events/index.ts - 随机事件库
+
+import { EventTemplate } from '@/types/events';
+
+export const eventTemplates: EventTemplate[] = [
+  {
+    id: 'key_employee_quit',
+    title: '💼 核心员工离职',
+    description: '你的 senior 后端工程师突然提出离职。他负责了核心 API 的设计，交接需要时间。',
+    weight: 5,
+    minSprint: 3,
+    condition: { type: 'resource_threshold', resource: 'morale', threshold: 50, operator: 'lt' },
+    choices: [
+      { id: 'counter_offer', label: '加薪挽留 (+20% 算力/Sprint)', description: '用薪资挽留，但其他员工可能要求同等待遇', effects: { compute: -200, morale: 10 } },
+      { id: 'let_go', label: '放行 + 快速招聘', description: '让他走，启动招聘。会有 2 Sprint 的空窗期', effects: { morale: -5, techDebt: 10 } },
+      { id: 'knowledge_transfer', label: '强制知识转移 (1 Sprint)', description: '要求他完整交接，可能影响士气', effects: { morale: -10, techDebt: -5 } },
+    ],
+  },
+  {
+    id: 'competitor_launch',
+    title: '📰 竞品发布',
+    description: '竞争对手发布了一款类似产品，功能更全，价格更低。市场开始关注他们。',
+    weight: 7,
+    minSprint: 5,
+    condition: { type: 'resource_threshold', resource: 'nps', threshold: 60, operator: 'gt' },
+    choices: [
+      { id: 'fast_follow', label: '快速跟进', description: '加班赶工，复制竞品功能', effects: { nps: 5, techDebt: 15, morale: -10 } },
+      { id: 'differentiate', label: '差异化竞争', description: '强调你们的独特优势，不盲目跟随', effects: { nps: -5, techDebt: -5 } },
+      { id: 'ignore', label: '无视', description: '专注自己的路，相信产品质量', effects: { nps: -10, compute: 50 } },
+    ],
+  },
+  {
+    id: 'hacker_news',
+    title: '🚀 Hacker News 首页',
+    description: '有人把你的项目 post 到了 Hacker News，意外上了首页！流量暴增。',
+    weight: 4,
+    minSprint: 4,
+    choices: [
+      { id: 'scale', label: '紧急扩容', description: '加服务器应对流量，确保不崩', effects: { compute: -300, nps: 15 } },
+      { id: 'ride', label: '顺其自然', description: '靠现有资源硬抗，可能会慢但不会崩', effects: { nps: 5, compute: -100 } },
+      { id: 'engage', label: '积极互动', description: '在评论区回复，建立社区关系', effects: { nps: 10, compute: -50, morale: 5 } },
+    ],
+  },
+  {
+    id: 'cloud_cost_hike',
+    title: '☁️ 云服务涨价 30%',
+    description: 'AWS/Azure/阿里云 同时宣布涨价，你的基础设施成本直接上升 30%。',
+    weight: 6,
+    minSprint: 3,
+    condition: { type: 'resource_threshold', resource: 'compute', threshold: 500, operator: 'lt' },
+    choices: [
+      { id: 'optimize', label: '紧急优化', description: '砍掉非必要资源，优化配置', effects: { compute: 100, techDebt: 5 } },
+      { id: 'multi_cloud', label: '多云迁移', description: '把部分负载迁到便宜云。一次性投入大', effects: { compute: -200, techDebt: 8 } },
+      { id: 'absorb', label: '硬扛', description: '不做什么，看能不能撑过去', effects: { compute: -150 } },
+    ],
+  },
+  {
+    id: 'open_source_contribution',
+    title: '🌟 开源社区贡献',
+    description: '你在 GitHub 开源的一个工具被大厂 star 了，社区开始关注你们的技术实力。',
+    weight: 3,
+    minSprint: 6,
+    choices: [
+      { id: 'hire', label: '接收社区贡献者', description: '从社区中招募贡献者，可能发现人才', effects: { morale: 10, compute: -50 } },
+      { id: 'double_down', label: '加大开源投入', description: '更多开源项目，建立技术品牌', effects: { nps: 10, compute: -100, techDebt: -5 } },
+      { id: 'ignore', label: '保持现状', description: '开源只是副产品，专注产品', effects: { compute: 30 } },
+    ],
+  },
+  {
+    id: 'regulatory_review',
+    title: '📋 监管审查',
+    description: '网信办启动 AI 产品合规审查，要求你们提供数据安全报告。',
+    weight: 4,
+    minSprint: 8,
+    condition: { type: 'resource_threshold', resource: 'nps', threshold: 70, operator: 'gt' },
+    choices: [
+      { id: 'comply', label: '全力配合', description: '投入资源做合规，一次性解决', effects: { compute: -300, nps: 5, techDebt: -10 } },
+      { id: 'minimal', label: '最低限度', description: '只提供必要材料，风险是被要求整改', effects: { compute: -100, nps: -5 } },
+      { id: 'delay', label: '拖延', description: '假装没看见，等他们来催。高风险', effects: { nps: -15, compute: 100 } },
+    ],
+  },
+  {
+    id: 'llm_provider_down',
+    title: '⛔ LLM 提供商宕机',
+    description: '你们依赖的 LLM API 服务突然宕机，所有 AI 功能不可用。',
+    weight: 5,
+    minSprint: 2,
+    choices: [
+      { id: 'fallback', label: '启用备用模型', description: '切换到备用提供商，质量可能下降', effects: { nps: -5, compute: -100 } },
+      { id: 'cache', label: '纯缓存模式', description: '只返回缓存结果，新请求无法处理', effects: { nps: -10, compute: -50 } },
+      { id: 'wait', label: '等待恢复', description: '什么都不做，等提供商恢复。用户体验极差', effects: { nps: -20, compute: 50 } },
+    ],
+  },
+  {
+    id: 'prompt_leak',
+    title: '🔓 Prompt 泄露',
+    description: '有用户在社交媒体上公开了你们的 system prompt，竞争对手可能复制。',
+    weight: 4,
+    minSprint: 5,
+    condition: { type: 'resource_threshold', resource: 'techDebt', threshold: 60, operator: 'gt' },
+    choices: [
+      { id: 'rotate', label: '紧急轮换', description: '立即更换所有 prompt，安全但影响短期质量', effects: { compute: -200, nps: -5, techDebt: -10 } },
+      { id: 'ignore', label: '无视', description: 'prompt 本身不是核心壁垒，不浪费资源', effects: { nps: -10 } },
+      { id: 'legal', label: '法律手段', description: '发律师函要求删除。可能引发舆论风波', effects: { compute: -100, nps: -15, morale: -5 } },
+    ],
+  },
+  {
+    id: 'angel_investor',
+    title: '💰 天使投资人找上门',
+    description: '一位知名天使投资人看了你们的 demo，想聊投资。',
+    weight: 3,
+    minSprint: 6,
+    condition: { type: 'resource_threshold', resource: 'nps', threshold: 65, operator: 'gt' },
+    choices: [
+      { id: 'accept', label: '接受投资 (+2000 算力)', description: '获得资金，但投资人会要求每 5 Sprint 汇报一次', effects: { compute: 2000, morale: 10 } },
+      { id: 'negotiate', label: '谈判条件', description: '争取更好的条款，但可能谈崩', effects: { compute: 1000, morale: -5 } },
+      { id: 'decline', label: '拒绝', description: '保持独立，但资金压力继续', effects: { compute: -100, morale: 5 } },
+    ],
+  },
+  {
+    id: 'team_building',
+    title: '🎉 团队建设活动',
+    description: '团队连续加班 3 Sprint， morale 下降。HR 提议组织团建。',
+    weight: 6,
+    minSprint: 2,
+    condition: { type: 'resource_threshold', resource: 'morale', threshold: 60, operator: 'lt' },
+    choices: [
+      { id: 'fancy', label: '豪华团建 (消耗 300 算力)', description: '去外地旅游， morale 大幅提升', effects: { compute: -300, morale: 25 } },
+      { id: 'simple', label: '简单聚餐 (消耗 100 算力)', description: '附近吃顿好的，效果一般', effects: { compute: -100, morale: 10 } },
+      { id: 'skip', label: '跳过', description: '不浪费钱，继续干活', effects: { morale: -10 } },
+    ],
+  },
+  {
+    id: 'technical_debt_survey',
+    title: '📊 技术债务审计',
+    description: '你决定做一次全面的技术债务审计，了解系统真实状况。',
+    weight: 5,
+    minSprint: 4,
+    choices: [
+      { id: 'full_audit', label: '全面审计 (消耗 2 工时)', description: '完整评估所有模块，精确但耗时', effects: { techDebt: -10, compute: -100, morale: -5 } },
+      { id: 'quick_scan', label: '快速扫描 (消耗 1 工时)', description: '只扫描核心模块，粗略但快', effects: { techDebt: -5, compute: -50 } },
+      { id: 'skip', label: '推迟', description: '等工作闲一点再说', effects: { techDebt: 5 } },
+    ],
+  },
+  {
+    id: 'customer_escalation',
+    title: '📢 大客户投诉升级',
+    description: '你们最大的客户（占收入 30%）投诉 Agent 回答质量下降，威胁要换供应商。',
+    weight: 4,
+    minSprint: 5,
+    condition: { type: 'resource_threshold', resource: 'nps', threshold: 50, operator: 'lt' },
+    choices: [
+      { id: 'vip_support', label: 'VIP 支持 (消耗 2 工时)', description: '派专人对接，定制化修复', effects: { nps: 15, compute: -200, morale: -5 } },
+      { id: 'discount', label: '给折扣', description: '用价格换时间，但影响收入', effects: { nps: 5, compute: -150 } },
+      { id: 'honest', label: '坦诚沟通', description: '承认问题，给出修复时间表。风险是客户可能不接受', effects: { nps: -5, compute: -50, morale: 5 } },
+    ],
+  },
+];
